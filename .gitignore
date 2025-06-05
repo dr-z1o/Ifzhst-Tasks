@@ -14,9 +14,6 @@ obj/
 *.g.cs
 *.g.i.cs
 
-# Rider/JetBrains IDE
-.idea/
-*.sln.iml
 
 # Visual Studio Code
 .vscode/
