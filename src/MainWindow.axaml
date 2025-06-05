@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AvaloniaDummyProject.MainWindow"
+        x:DataType="local:MainWindowViewModel"
+        xmlns:local="clr-namespace:AvaloniaDummyProject.ViewModels"
+        Width="1100" Height="550" Title="Spectrogram + Waterfall">
+  <StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="10">
+      <Button Content="Start" Command="{Binding StartCommand}" Width="100" Margin="5"/>
+      <Button Content="Stop" Command="{Binding StopCommand}" Width="100" Margin="5"/>
+    </StackPanel>
+    <Canvas Height="20" Width="1024" Margin="0">
+        <TextBlock Canvas.Left="0" Text="90 MHz"/>
+        <TextBlock Canvas.Left="256" Text="95 MHz"/>
+        <TextBlock Canvas.Left="512" Text="100 MHz"/>
+        <TextBlock Canvas.Left="768" Text="105 MHz"/>
+        <TextBlock Canvas.Left="1000" Text="110 MHz"/>
+    </Canvas>
+    <Image x:Name="SpectrumImageControl"  Source="{Binding SpectrumImage}" Width="1024" Height="200" Stretch="None"
+           PointerMoved="OnPointerMoved"
+           PointerExited="OnPointerExited"/>
+    <Image x:Name="WaterfallImageControl" Source="{Binding WaterfallImage}" Width="1024" Height="200" Stretch="None"/>
+    <TextBlock x:Name="FrequencyText" Text="--- MHz"/>
+  </StackPanel>
+</Window>

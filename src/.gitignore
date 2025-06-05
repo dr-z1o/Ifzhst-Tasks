@@ -1,0 +1,36 @@
+# Ignore build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Avalonia-specific
+*.Designer.cs
+*.g.cs
+*.g.i.cs
+
+# Rider/JetBrains IDE
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+
+# Logs
+*.log
+logs/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+packages/
