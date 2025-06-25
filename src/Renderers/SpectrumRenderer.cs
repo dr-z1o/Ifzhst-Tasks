@@ -9,9 +9,10 @@ namespace AvaloniaDummyProject.Renderers;
 
 public class SpectrumRenderer
 {
-    WriteableBitmap _bitmap;
+    private WriteableBitmap _bitmap;
     private const int Width = 1024;
     private const int Height = 200;
+    
     public SpectrumRenderer()
     {
         _bitmap = new WriteableBitmap(new PixelSize(Width, Height), new Vector(96, 96), PixelFormat.Bgra8888);
@@ -24,18 +25,9 @@ public class SpectrumRenderer
 
     public WriteableBitmap GetBitmap() => _bitmap;
     
-    public WriteableBitmap Render(double[] data, int pointerX = -1)
+    public void Render(double[] data, int pointerX = -1)
     {
         using var fb = _bitmap.Lock();
-
-        // for (int x = 1; x < data.Length; x++)
-        // {
-        //     int y1 = (int)((data[x - 1] + 120) / 100.0 * 200);
-        //     int y2 = (int)((data[x] + 120) / 100.0 * 200);
-        //     y1 = 200 - y1;
-        //     y2 = 200 - y2;
-        //     fb.DrawLine(x - 1, y1, x, y2, LineColor);
-        // }
 
         unsafe
         {
@@ -59,8 +51,6 @@ public class SpectrumRenderer
                 DrawLine(buffer, fb.RowBytes, pointerX, y0, pointerX, y1, PointerColor);
             }
         }
-        
-        return _bitmap;
     }
 
     private void DrawLine(Span<byte> buffer, int stride, int x0, int y0, int x1, int y1, Color? color = null)
@@ -80,10 +70,10 @@ public class SpectrumRenderer
             if (x0 >= 0 && x0 < Width && y0 >= 0 && y0 < Height)
             {
                 int index = y0 * stride + x0 * 4;
-                buffer[index + 0] = b;//0;
-                buffer[index + 1] = g;//255;
-                buffer[index + 2] = r;//0;
-                buffer[index + 3] = a;//255;
+                buffer[index + 0] = b;
+                buffer[index + 1] = g;
+                buffer[index + 2] = r;;
+                buffer[index + 3] = a;
             }
 
             if (x0 == x1 && y0 == y1) break;
