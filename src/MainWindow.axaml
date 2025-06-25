@@ -3,7 +3,7 @@
         x:Class="AvaloniaDummyProject.MainWindow"
         xmlns:local="clr-namespace:AvaloniaDummyProject.ViewModels"
         x:DataType="local:MainWindowViewModel"
-        Width="1100" Height="550" Title="Spectrogram + Waterfall">
+        Width="1100" Height="550" Title="Spectrogram + Waterfall #2">
   <StackPanel>
     <StackPanel Orientation="Horizontal" Margin="10">
       <Button Content="Start" Command="{Binding StartCommand}" Width="100" Margin="5"/>
