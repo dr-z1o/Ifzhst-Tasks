@@ -1,5 +1,6 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using AvaloniaDummyProject.ViewModels;
@@ -8,13 +9,14 @@ namespace AvaloniaDummyProject
 {
     public partial class MainWindow : Window
     {
+        private MainWindowViewModel _vm;
+
         public MainWindow()
         {
             try
             {
                 InitializeComponent();
-                // this.FindControl<Image>("SpectrumImageControl")?.AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
-
+                this.TemplateApplied += OnTemplateApplied;
                 Console.WriteLine("MainWindow created");
             }
             catch (System.Exception ex)
@@ -24,24 +26,49 @@ namespace AvaloniaDummyProject
             }
         }
 
+        private void OnTemplateApplied(object sender, TemplateAppliedEventArgs e)
+        {
+            InitBitmaps();
+        }
+
+        private void InitBitmaps()
+        {
+            // Ensure that the ViewModel is set and subscribed to the BitmapUpdated event
+            if (_vm != null) return;
+
+            _vm = this.DataContext as MainWindowViewModel;
+            _vm.BitmapUpdated += OnBitmapUpdated;
+        }
+
+        private void OnBitmapUpdated()
+        {
+            if (SpectrumImageControl != null)
+            {
+                SpectrumImageControl.Source = null;
+                SpectrumImageControl.Source = _vm.SpectrumImage;
+            }
+
+            if (WaterfallImageControl != null)
+            {
+                WaterfallImageControl.Source = null;
+                WaterfallImageControl.Source = _vm.WaterfallImage;
+            }
+        }
+
         private void OnPointerMoved(object sender, PointerEventArgs e)
         {
+            // Update the mouse pointer position in the ViewModel
             var point = e.GetPosition(sender as Control);
             int x = (int)point.X;
             if (DataContext is MainWindowViewModel viewModel)
                 viewModel.MousePointer = point;
-
-            // индекс по X → частота
-            double frequency = MainWindowViewModel.FrequencyForIndex(x, 1024);
-            FrequencyText.Text = $"Frequency: {frequency:F2} MHz";
         }
 
         private void OnPointerExited(object sender, PointerEventArgs e)
         {
-            // Очистка курсора и текста частоты при выходе курсора
+            // Cleanup the mouse pointer when it exits the control
             if (DataContext is MainWindowViewModel viewModel)
                 viewModel.MousePointer = null;
-            FrequencyText.Text = "Frequency: N/A"; // Очистка текста частоты при выходе курсора
-        }
+          }
     }
 }
