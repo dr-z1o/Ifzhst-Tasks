@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Avalonia.Threading;
 using AvaloniaDummyProject.Extensions;
 using AvaloniaDummyProject.Renderers;
+using Avalonia;
 
 namespace AvaloniaDummyProject.ViewModels
 {
@@ -12,10 +13,11 @@ namespace AvaloniaDummyProject.ViewModels
     public partial class MainWindowViewModel : ObservableObject
     {
         private DispatcherTimer _timer;
+        private Point? _mousePointer;
 
-        private readonly SignalGenerator _generator = new();
-        private readonly SpectrumRenderer _spectrum = new();
-        private readonly WaterfallRenderer _waterfall = new();
+        private readonly SignalGenerator _generator;
+        private readonly SpectrumRenderer _spectrum;
+        private readonly WaterfallRenderer _waterfall;
 
         [ObservableProperty]
         private WriteableBitmap spectrumImage;
@@ -23,35 +25,77 @@ namespace AvaloniaDummyProject.ViewModels
         [ObservableProperty]
         private WriteableBitmap waterfallImage;
 
-        [RelayCommand]
-        private void Start()
+        [ObservableProperty]
+        private double cursorFrequency;
+
+        public MainWindowViewModel()
         {
+            _generator = new SignalGenerator();
+            _spectrum = new SpectrumRenderer();
+            _waterfall = new WaterfallRenderer();
+
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
             _timer.Tick += (s, e) => Update();
-            _timer.Start();
         }
 
-        [RelayCommand]
-        private void Stop() => _timer?.Stop();
+        [RelayCommand(CanExecute = nameof(CanStart))]
+        //[RelayCommand(CanExecute = nameof(IsRunning))]
+        private void Start()
+        {
+            if (IsRunning) return;
+
+            _timer.Start();
+
+            SpectrumImage = _spectrum.GetBitmap();
+            WaterfallImage = _waterfall.GetBitmap();
+            IsRunning = true;
+            OnIsRunningChanged();
+        }
+
+        private bool CanStart() => !IsRunning;
+
+        [ObservableProperty]
+        public bool isRunning;
+
+        [RelayCommand(CanExecute = nameof(IsRunning))]
+        private void Stop()
+        {
+            if (!IsRunning) return;
+
+            _timer?.Stop();
+            IsRunning = false;
+            StartCommand.NotifyCanExecuteChanged();
+            StopCommand.NotifyCanExecuteChanged();
+        }
+
+        private void OnIsRunningChanged()
+        {
+            //
+            StartCommand.NotifyCanExecuteChanged();
+            StopCommand.NotifyCanExecuteChanged();
+        }
+
+        public event Action BitmapUpdated;
 
         private void Update()
         {
             var data = _generator.Generate();
-            WaterfallImage = _waterfall.AddAndRender(data);
+            _waterfall.AddAndRender(data);
 
-            var tmpSectrum = _spectrum.Render(data);
-            if (MousePointer.HasValue)
-                DrawVerticalLine(tmpSectrum, (int)MousePointer.Value.X);
-            SpectrumImage = tmpSectrum;
+            _spectrum.Render(data, MousePointer.HasValue ? (int)MousePointer.Value.X : -1);
+
+            BitmapUpdated?.Invoke();
         }
 
-        private void DrawVerticalLine(WriteableBitmap wb,int x, int y = 0)
+        public Point? MousePointer
         {
-            using var fb = wb.Lock();
-            fb.DrawLine(x, 0, x, fb.Size.Height, _spectrum.PointerColor);
+            get => _mousePointer;
+            set
+            {
+                _mousePointer = value;
+                CursorFrequency = value.HasValue ? FrequencyForIndex((int)value.Value.X, 1024) : 0;
+            }
         }
-
-        public Avalonia.Point? MousePointer;
 
         public static double FrequencyForIndex(int index, int total = 1024) => 90.0 + index * (20.0 / total);
     }
