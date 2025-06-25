@@ -29,6 +29,8 @@ namespace AvaloniaDummyProject
         private void OnTemplateApplied(object sender, TemplateAppliedEventArgs e)
         {
             InitBitmaps();
+
+            this.TemplateApplied -= OnTemplateApplied;
         }
 
         private void InitBitmaps()
@@ -58,17 +60,19 @@ namespace AvaloniaDummyProject
         private void OnPointerMoved(object sender, PointerEventArgs e)
         {
             // Update the mouse pointer position in the ViewModel
+            if (_vm == null) return;
+            
             var point = e.GetPosition(sender as Control);
             int x = (int)point.X;
-            if (DataContext is MainWindowViewModel viewModel)
-                viewModel.MousePointer = point;
+            _vm.MousePointer = point;
         }
 
         private void OnPointerExited(object sender, PointerEventArgs e)
         {
             // Cleanup the mouse pointer when it exits the control
-            if (DataContext is MainWindowViewModel viewModel)
-                viewModel.MousePointer = null;
+            if (_vm == null) return;
+
+            _vm.MousePointer = null;
           }
     }
 }

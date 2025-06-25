@@ -56,20 +56,12 @@ namespace AvaloniaDummyProject.ViewModels
             var data = _generator.Generate();
             _waterfall.AddAndRender(data);
 
-            _spectrum.Render(data);
-            if (MousePointer.HasValue)
-                DrawVerticalLine(SpectrumImage, (int)MousePointer.Value.X);
+            _spectrum.Render(data, MousePointer.HasValue ? (int)MousePointer.Value.X : -1);
 
             BitmapUpdated?.Invoke();
         }
 
-        private void DrawVerticalLine(WriteableBitmap wb,int x, int y = 0)
-        {
-            using var fb = wb.Lock();
-            fb.DrawLine(x, 0, x, fb.Size.Height, _spectrum.PointerColor);
-        }
-
-        public Avalonia.Point? MousePointer
+        public Point? MousePointer
         {
             get => _mousePointer;
             set

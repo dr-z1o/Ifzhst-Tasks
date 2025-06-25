@@ -24,7 +24,7 @@ public class SpectrumRenderer
 
     public WriteableBitmap GetBitmap() => _bitmap;
     
-    public WriteableBitmap Render(double[] data)
+    public WriteableBitmap Render(double[] data, int pointerX = -1)
     {
         using var fb = _bitmap.Lock();
 
@@ -39,6 +39,9 @@ public class SpectrumRenderer
 
         unsafe
         {
+            // Line Color is used for the spectrum lines
+            byte r = LineColor.R, g = LineColor.G, b = LineColor.B, a = LineColor.A;
+
             Span<byte> buffer = new((void*)fb.Address, fb.RowBytes * fb.Size.Height);
             buffer.Clear(); // Clear the buffer
 
@@ -46,13 +49,27 @@ public class SpectrumRenderer
             {
                 int y1 = Height - (int)((data[x - 1] + 120) / 100.0 * Height);
                 int y2 = Height - (int)((data[x] + 120) / 100.0 * Height);
-                DrawLine(buffer, fb.RowBytes, x - 1, y1, x, y2);
+                DrawLine(buffer, fb.RowBytes, x - 1, y1, x, y2, r, g, b, a);
+            }
+
+            //Draw the pointer line if pointerX is provided
+            if (pointerX >= 0 && pointerX < Width)
+            {
+                int y0 = 0, y1 = Height - 1;
+                DrawLine(buffer, fb.RowBytes, pointerX, y0, pointerX, y1, PointerColor);
             }
         }
+        
         return _bitmap;
     }
 
-    private static void DrawLine(Span<byte> buffer, int stride, int x0, int y0, int x1, int y1)
+    private void DrawLine(Span<byte> buffer, int stride, int x0, int y0, int x1, int y1, Color? color = null)
+    {
+        color ??= LineColor; // Default color if none provided
+        byte r = color.Value.R, g = color.Value.G, b = color.Value.B, a = color.Value.A;
+        DrawLine(buffer, stride, x0, y0, x1, y1, r, g, b, a);
+    }
+    private static void DrawLine(Span<byte> buffer, int stride, int x0, int y0, int x1, int y1, byte r, byte g, byte b, byte a)
     {
         int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
         int dy = -Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
@@ -63,10 +80,10 @@ public class SpectrumRenderer
             if (x0 >= 0 && x0 < Width && y0 >= 0 && y0 < Height)
             {
                 int index = y0 * stride + x0 * 4;
-                buffer[index + 0] = 0;
-                buffer[index + 1] = 255;
-                buffer[index + 2] = 0;
-                buffer[index + 3] = 255;
+                buffer[index + 0] = b;//0;
+                buffer[index + 1] = g;//255;
+                buffer[index + 2] = r;//0;
+                buffer[index + 3] = a;//255;
             }
 
             if (x0 == x1 && y0 == y1) break;
