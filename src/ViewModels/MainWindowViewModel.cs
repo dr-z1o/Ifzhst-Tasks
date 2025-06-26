@@ -39,7 +39,6 @@ namespace AvaloniaDummyProject.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
-        //[RelayCommand(CanExecute = nameof(IsRunning))]
         private void Start()
         {
             if (IsRunning) return;
@@ -49,30 +48,24 @@ namespace AvaloniaDummyProject.ViewModels
             SpectrumImage = _spectrum.GetBitmap();
             WaterfallImage = _waterfall.GetBitmap();
             IsRunning = true;
-            OnIsRunningChanged();
         }
 
         private bool CanStart() => !IsRunning;
 
-        [ObservableProperty]
-        public bool isRunning;
+        private bool CanStop() => IsRunning;
 
-        [RelayCommand(CanExecute = nameof(IsRunning))]
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+        [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+        private bool isRunning;
+
+        [RelayCommand(CanExecute = nameof(CanStop))]
         private void Stop()
         {
             if (!IsRunning) return;
 
             _timer?.Stop();
             IsRunning = false;
-            StartCommand.NotifyCanExecuteChanged();
-            StopCommand.NotifyCanExecuteChanged();
-        }
-
-        private void OnIsRunningChanged()
-        {
-            //
-            StartCommand.NotifyCanExecuteChanged();
-            StopCommand.NotifyCanExecuteChanged();
         }
 
         public event Action BitmapUpdated;
@@ -97,6 +90,6 @@ namespace AvaloniaDummyProject.ViewModels
             }
         }
 
-        public static double FrequencyForIndex(int index, int total = 1024) => 90.0 + index * (20.0 / total);
+        private static double FrequencyForIndex(int index, int total = 1024) => 90.0 + index * (20.0 / total);
     }
 }

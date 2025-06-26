@@ -44,15 +44,17 @@ namespace AvaloniaDummyProject
 
         private void OnBitmapUpdated()
         {
+            if (_vm == null) return;
+            
             if (SpectrumImageControl != null)
             {
-                SpectrumImageControl.Source = null;
+                SpectrumImageControl.Source = null; // to ask Avalonia to re-render
                 SpectrumImageControl.Source = _vm.SpectrumImage;
             }
 
             if (WaterfallImageControl != null)
             {
-                WaterfallImageControl.Source = null;
+                WaterfallImageControl.Source = null; // to ask Avalonia to re-render
                 WaterfallImageControl.Source = _vm.WaterfallImage;
             }
         }
