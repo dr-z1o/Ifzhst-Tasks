@@ -13,11 +13,11 @@ namespace NetDummyApp;
 /// </summary>
 public class IQDataReceiver
 {
-    private readonly UdpClient _udpClient;
-    private readonly IPEndPoint _localEp;
-    private readonly ILogger _logger;
+    private readonly UdpClient? _udpClient;
+    private readonly IPEndPoint? _localEp;
+    private readonly ILogger? _logger;
 
-    public IQDataReceiver(string address, int port, ILogger logger = null)
+    public IQDataReceiver(string address, int port, ILogger? logger = null)
     {
         _localEp = new IPEndPoint(IPAddress.Parse(address), port);
         _udpClient = new UdpClient(_localEp);
@@ -38,7 +38,7 @@ public class IQDataReceiver
 
             while (!cts.IsCancellationRequested)
             {
-                if (_udpClient.Available > 0)
+                if (_udpClient?.Available > 0)
                 {
                     var result = await _udpClient.ReceiveAsync();
                     bw.Write(result.Buffer);
