@@ -2,7 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avalonia-dummy-project", "avalonia-dummy-project.csproj", "{64F89618-8C77-B952-1388-A6E60CF31757}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "avalonia-dummy-project", "avalonia-dummy-project/avalonia-dummy-project.csproj", "{64F89618-8C77-B952-1388-A6E60CF31757}"
+EndProject
+Project("{E64DADF6-8C24-4893-A7A6-80617714C037}") = "net-dummy-app", "net-dummy-app/net-dummy-app.csproj", "{B63FEA55-0596-56C7-3FC7-4A6D5BC58CBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,6 +16,11 @@ Global
 		{64F89618-8C77-B952-1388-A6E60CF31757}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64F89618-8C77-B952-1388-A6E60CF31757}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64F89618-8C77-B952-1388-A6E60CF31757}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{B63FEA55-0596-56C7-3FC7-4A6D5BC58CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B63FEA55-0596-56C7-3FC7-4A6D5BC58CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B63FEA55-0596-56C7-3FC7-4A6D5BC58CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B63FEA55-0596-56C7-3FC7-4A6D5BC58CBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
