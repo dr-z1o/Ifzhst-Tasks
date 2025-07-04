@@ -84,7 +84,7 @@ internal class Program
 
         // proceed with the main flow
         using var tcpNetworkClient = new TcpNetworkClient();
-        var client = new NetSdrClient(tcpNetworkClient, loggerFactory.CreateLogger<NetSdrClient>());
+        var client = new NetSdrClient(tcpNetworkClient, null, loggerFactory.CreateLogger<NetSdrClient>());
 
         try
         {

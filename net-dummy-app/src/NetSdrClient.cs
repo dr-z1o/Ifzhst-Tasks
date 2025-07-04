@@ -19,9 +19,10 @@ public interface INetworkClient : IDisposable
 /// <summary>
 /// Wrapper for network client to allow dependency injection and testing.
 /// </summary>
-public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
+public class NetSdrClient(INetworkClient networkClient, IMessageHandler? messageHandler = null, ILogger? logger = null)
 {
-    internal readonly INetworkClient? _networkClient = networkClient;
+    private readonly INetworkClient? _networkClient = networkClient;
+    private readonly IMessageHandler _messageHandler = messageHandler ?? new DefaultMessageHandler(null, logger);
     private readonly ILogger? _logger = logger;
 
     public bool IsConnected => _networkClient?.IsConnected == true;
@@ -91,10 +92,18 @@ public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
             await _networkClient.SendAsync(command);
             var response = await _networkClient.ReceiveAsync();
 
-            _logger?.LogInformation("Received response: {response}", response.Trim());
-
-            if (response.StartsWith("NAK"))
-                throw new InvalidOperationException($"Received NAK for command: {command}");
+            if (response.StartsWith("ACK", StringComparison.OrdinalIgnoreCase))
+            {
+                _messageHandler.HandleAck(response);
+            }
+            else if (response.StartsWith("NAK", StringComparison.OrdinalIgnoreCase))
+            {
+                _messageHandler.HandleNak(response);
+            }
+            else
+            {
+                _messageHandler.HandleUnsolicited(response);
+            }
         }
         catch (Exception ex)
         {

@@ -15,7 +15,7 @@ public class NetSdrClientTests
     {
         _mockNetworkClient = new Mock<INetworkClient>();
         _mockLogger = new Mock<ILogger<NetSdrClient>>();
-        _client = new NetSdrClient(_mockNetworkClient.Object, _mockLogger.Object);
+        _client = new NetSdrClient(_mockNetworkClient.Object, null, _mockLogger.Object);
     }
 
     [Fact]
