@@ -1,16 +1,27 @@
-using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace NetDummyApp;
+
+/// <summary>
+/// Interface for network client to allow dependency injection and testing.
+/// This interface abstracts the network client functionality to enable mocking in tests.
+/// </summary>
+public interface INetworkClient : IDisposable
+{
+    Task ConnectAsync(string host, int port);
+    Task DisconnectAsync();
+    Task SendAsync(string command);
+    Task<string> ReceiveAsync();
+    Stream? GetStream();
+    bool IsConnected { get; }
+}
+
+/// <summary>
+/// Wrapper for network client to allow dependency injection and testing.
+/// </summary>
 public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
 {
-    //internal TcpClient? _tcpClient;
     internal readonly INetworkClient? _networkClient = networkClient;
-    //internal NetworkStream? _stream;
     private readonly ILogger? _logger = logger;
 
     public bool IsConnected => _networkClient?.IsConnected == true;
@@ -28,11 +39,6 @@ public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
     {
         try
         {
-            // _tcpClient = new TcpClient();
-            // await _tcpClient.ConnectAsync(host, port);
-            // _stream = _tcpClient.GetStream();
-
-            //ThrowIfNotInitialized("Network client is not initialized"); //
             if (_networkClient is null)
             {
                 _logger?.LogError("Network client is not initialized");
@@ -52,15 +58,6 @@ public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
     {
         try
         {
-            // if (IsConnected && _stream != null)
-            // {
-            //     await _stream.FlushAsync();
-            //     _stream.Close();
-            //     _tcpClient?.Close();
-            //     _logger?.LogInformation("Disconnected from device");
-            // }
-
-            // ThrowIfNotInitialized("Network client is not initialized");
             if (_networkClient is null)
             {
                 _logger?.LogError("Network client is not initialized");
@@ -79,8 +76,6 @@ public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
     public async Task StartIqTransmissionAsync() => await SendCommandAsync("set RX On");
     public async Task StopIqTransmissionAsync() => await SendCommandAsync("set RX Off");
     public async Task SetFrequencyAsync(int freqHz) => await SendCommandAsync($"set RXFrequency {freqHz}");
-
-    //protected virtual Stream? GetStream() => _stream;
 
     private async Task SendCommandAsync(string command)
     {
@@ -107,29 +102,4 @@ public class NetSdrClient(INetworkClient networkClient, ILogger? logger = null)
             throw;
         }
     }
-
-    // protected virtual async Task SendCommandAsync(string command)
-    // {
-    //     try
-    //     {
-    //         _logger?.LogInformation("Sending command: {command}", command);
-
-    //         var bytes = Encoding.ASCII.GetBytes(command + "\n");
-    //         await _stream.WriteAsync(bytes);
-
-    //         var buffer = new byte[256];
-    //         int bytesRead = await _stream.ReadAsync(buffer);
-    //         string response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-
-    //         _logger?.LogInformation("Received response: {response}", response.Trim());
-
-    //         if (response.StartsWith("NAK"))
-    //             throw new InvalidOperationException($"Received NAK for command: {command}");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger?.LogError(ex, "Failed to send command: {command}", command);
-    //         throw;
-    //     }
-    // }
 }

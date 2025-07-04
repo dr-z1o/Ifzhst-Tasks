@@ -1,10 +1,11 @@
-using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NetDummyApp;
+
+/// <summary>
+/// TcpNetworkClient is a simple implementation of INetworkClient that uses TcpClient
+/// </summary>
 public class TcpNetworkClient : INetworkClient
 {
     private TcpClient? _tcpClient;
@@ -50,7 +51,7 @@ public class TcpNetworkClient : INetworkClient
         return Encoding.ASCII.GetString(buffer, 0, bytesRead);
     }
 
-    public Stream GetStream() => _stream;
+    public Stream? GetStream() => _stream;
 
     public void Dispose()
     {
