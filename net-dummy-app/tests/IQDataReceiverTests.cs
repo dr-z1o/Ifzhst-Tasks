@@ -11,7 +11,6 @@ namespace NetDummyApp.Tests;
 /// </summary>
 public class IQDataReceiverTests : IDisposable
 {
-    // private readonly Mock<IUdpClientWrapper> _mockUdpClient;
     private readonly Mock<IUdpClient> _mockUdpClient;
     private readonly Mock<ILogger<IQDataReceiver>> _mockLogger;
     private readonly string _tempFilePath;
@@ -153,8 +152,6 @@ public class IQDataReceiverTests : IDisposable
         // Assert
         var bytes = await File.ReadAllBytesAsync(_tempFilePath);
         Assert.Empty(bytes);
-
-        // File.Delete(filePath);
     }
 
     [Fact]
@@ -170,8 +167,6 @@ public class IQDataReceiverTests : IDisposable
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => receiver.StartReceivingAsync(_tempFilePath, TimeSpan.FromMilliseconds(100)));
-
-        //File.Delete(filePath);
     }
 
     [Fact]
@@ -189,8 +184,6 @@ public class IQDataReceiverTests : IDisposable
 
         // Assert
         Assert.True(elapsedTime >= TimeSpan.FromMilliseconds(100));
-
-        //File.Delete(_tempFilePath);
     }
 
     [Fact]
